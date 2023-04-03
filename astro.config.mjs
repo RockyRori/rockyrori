@@ -2,5 +2,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-    site: 'http://www.rockyrori.cn/',
+    site: 'https://RockyRori.github.io',
+    base: '/rockyrori',
 });

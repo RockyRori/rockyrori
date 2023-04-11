@@ -4,9 +4,7 @@ import ThemeToggle from "./ThemeToggle.astro";
 
 // 主页最上方中间的站内导航，可以在此处添加新的二级页面。
 const textLinks: { label: string; href: string }[] = [
-	{ label: "Work", href: "/work/" },
 	{ label: "主页", href: "/" },
-	{ label: "简介", href: "/about/" },
 	{ label: "照片", href: "/picture/" },
 	{ label: "诗词", href: "/poem/" },
 	{ label: "文章", href: "/article/" },
@@ -44,7 +42,7 @@ const iconLinks: { label: string; href: string; icon: IconProps["icon"] }[] = [
 	<div class="menu-header">
 		<a href="/" class="site-title">
 			<Icon
-				icon="main-logo"
+				icon="favicon"
 				color="var(--accent-regular)"
 				size="1.6em"
 				gradient

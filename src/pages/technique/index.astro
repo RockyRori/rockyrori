@@ -1,14 +1,14 @@
 ---
 import { getCollection } from "astro:content";
 
-import BaseLayout from "../layouts/BaseLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 
-import ContactCTA from "../components/ContactCTA.astro";
-import PortfolioPreview from "../components/PortfolioPreview.astro";
-import Hero from "../components/Hero.astro";
-import Grid from "../components/Grid.astro";
+import ContactCTA from "../../components/ContactCTA.astro";
+import TechniquePreview from "../../components/TechniquePreview.astro";
+import Hero from "../../components/Hero.astro";
+import Grid from "../../components/Grid.astro";
 
-const projects = (await getCollection("work")).sort(
+const projects = (await getCollection("technique")).sort(
 	(a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
 );
 ---
@@ -25,7 +25,7 @@ const projects = (await getCollection("work")).sort(
 				{
 					projects.map((project) => (
 						<li>
-							<PortfolioPreview project={project} />
+							<TechniquePreview project={project} />
 						</li>
 					))
 				}

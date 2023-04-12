@@ -1,0 +1,36 @@
+---
+import { getCollection } from "astro:content";
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+import ContactCTA from "../../components/ContactCTA.astro";
+import VideoPreview from "../../components/VideoPreview.astro";
+import Hero from "../../components/Hero.astro";
+import Grid from "../../components/Grid.astro";
+
+const projects = (await getCollection("video")).sort(
+	(a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf()
+);
+---
+
+<BaseLayout title="Video~RockyRori" description="罗粟海的视频">
+	<div class="stack gap-20">
+		<main class="wrapper stack gap-8">
+			<Hero
+				title="视频更精彩"
+				tagline="过尽千帆皆不是，斜晖脉脉水悠悠。"
+				align="start"
+			/>
+			<Grid variant="offset">
+				{
+					projects.map((project) => (
+						<li>
+							<VideoPreview project={project} />
+						</li>
+					))
+				}
+			</Grid>
+		</main>
+		<ContactCTA />
+	</div>
+</BaseLayout>

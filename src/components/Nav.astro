@@ -6,10 +6,12 @@ import ThemeToggle from "./ThemeToggle.astro";
 const textLinks: { label: string; href: string }[] = [
 	{ label: "主页", href: "/" },
 	{ label: "照片", href: "/picture/" },
+	{ label: "视频", href: "/video/" },
 	{ label: "诗词", href: "/poem/" },
 	{ label: "文章", href: "/article/" },
-	{ label: "技术", href: "/technique/" },
 	{ label: "游戏", href: "/game/" },
+	{ label: "技术", href: "/technique/" },
+	{ label: "简历", href: "/resume/" },
 ];
 
 // 主页最上方右边的外部链接，可以在此处更改自己想要引流的外链。
@@ -53,7 +55,7 @@ const iconLinks: { label: string; href: string; icon: IconProps["icon"] }[] = [
 			<template>
 				<button class="menu-button" aria-expanded="false">
 					<span class="sr-only">Menu</span>
-					<Icon icon="list" />
+					<Icon icon="menu" />
 				</button>
 			</template>
 		</menu-button>

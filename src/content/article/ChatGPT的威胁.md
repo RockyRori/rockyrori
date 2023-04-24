@@ -1,7 +1,7 @@
 ---
 title: ChatGPT的威胁
 publishDate: 2023-04-27 17:42:00
-img: 
+img: /assets/article/ChatGPT的威胁.jpg
 img_alt: 
 description: |
   无

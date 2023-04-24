@@ -1,7 +1,7 @@
 ---
 title: ChatExcel使用教程
 publishDate: 2023-03-23 15:17:00
-img: 
+img: /assets/technique/ChatExcel使用教程.png
 img_alt: 
 description: |
   无

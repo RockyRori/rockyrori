@@ -17,3 +17,7 @@ tags:
 　　造梦日记 https://printidea.art/ 需要消耗积分，可下载已有的的画作
 
 　　Draft https://draft.art/ 需要消耗积分，可下载已有的的画作
+
+　　OpenArt https://openart.ai/ 需要消耗积分，需要谷歌账号，初始1000积分，每张图片1积分
+
+　　Lexica https://lexica.art/ 需要谷歌账号，生动活泼

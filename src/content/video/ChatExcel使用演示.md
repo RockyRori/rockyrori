@@ -1,7 +1,7 @@
 ---
 title: ChatExcel使用演示
 publishDate: 2023-03-06 13:34:00
-img: 
+img: /assets/video/ChatExcel使用演示.png
 img_alt: 
 description: |
   无

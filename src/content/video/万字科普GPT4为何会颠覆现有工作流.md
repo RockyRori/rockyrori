@@ -1,7 +1,7 @@
 ---
 title: 万字科普GPT4为何会颠覆现有工作流
 publishDate: 2023-04-12 15:57:00
-img: 
+img: /assets/video/万字科普GPT4为何会颠覆现有工作流.png
 img_alt: 
 description: |
   无

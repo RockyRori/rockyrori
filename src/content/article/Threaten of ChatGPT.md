@@ -1,7 +1,7 @@
 ---
 title: Threaten of ChatGPT
 publishDate: 2023-04-12 18:06:00
-img: 
+img: /assets/article/Threaten_of_ChatGPT.jpg
 img_alt: 
 description: |
   无

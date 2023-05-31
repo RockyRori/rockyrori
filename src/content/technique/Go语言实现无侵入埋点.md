@@ -209,9 +209,9 @@ $ go build -toolexec /path/to/go-agent-instrument ./
 
 　　<font color=bule>提供静态方法和类方法的拦截方式，同时支持校验配置，只有满足校验规则的函数才会被拦截。有两个东西是必须的。
 
-1. 检验逻辑：函数的拦截是基于AST（abstract syntax tree [抽象语法树](https://juejin.cn/post/7030457038840791053)）语法验证做的，文章作者会提供一个API来帮插件开发者做检验逻辑，就像java-agent中的bytebuddy框架（字节码修改技术）使用element-matcher（元素匹配器）一样简单。
+　　　　1. 检验逻辑：函数的拦截是基于AST（abstract syntax tree [抽象语法树](https://juejin.cn/post/7030457038840791053)）语法验证做的，文章作者会提供一个API来帮插件开发者做检验逻辑，就像java-agent中的bytebuddy框架（字节码修改技术）使用element-matcher（元素匹配器）一样简单。
 
-2. 拦截器名称：可以设置多个拦截器，每个拦截器有自己的名称和插入逻辑，对满足不同校验逻辑的函数选择对应名称的拦截器来处理插入逻辑。
+　　　　2. 拦截器名称：可以设置多个拦截器，每个拦截器有自己的名称和插入逻辑，对满足不同校验逻辑的函数选择对应名称的拦截器来处理插入逻辑。
 
 　　</font>
 
@@ -304,12 +304,16 @@ go func() {
 
 　　So when the Go agent instrumentation program executes, it can obtain the file paths in each package, allowing it to access all the Go files required for the target program's compilation. At this point, the enhancement program can use AST technology to parse and modify the file content. After the modifications or additions are completed, the parameters required for compilation can be modified, and the compilation command can be executed eventually. This is the principle of hybrid compilation.
 
-当在go build编译时在命令行使用参数toolexec指定go-agent插件时，Golang会从所有的package级别收集文件。遇到compile或者asm命令的时候把包内全部文件发给toolexec指定的go-agent插件生成目标编译文件。因此可以把toolexec指定的go-agent插件看做是一个编译代理。
+　　<font color=bule>当在go build编译时在命令行使用参数toolexec指定go-agent插件时，Golang会从所有的package级别收集文件。遇到compile或者asm命令的时候把package内全部文件发给toolexec指定的go-agent插件生成目标编译文件。因此可以把toolexec指定的go-agent插件看做是一个编译代理。所以说，混合编译的原理就是go-agent运行时访问package中的所有待编译文件，增强程序使用AST技术解析文件内容并且添加埋点方法。
+　　</font>
 
 
 #### Method interception
 
 　　When the enhancement program detects that the go file of the current package contains the specified method, the program will make the following changes.
+
+　　<font color=bule>当增强程序检测到当前package包含符合条件的函数时，程序就会做出一下更改。
+　　</font>
 
 ##### Insert code before method execution
 
@@ -333,11 +337,21 @@ func (x *Receiver) TestMethod(arg1 int) (result error) {
 
 　　　　2. _skywalking_enhance_receiver_TestMethod_ret: This function is executed after the intercepted method has been completed, and the return value of the current method is passed into it. It is worth noting that if the method to be intercepted does not have parameter names, the enhancement program will automatically set names for them.
 
+　　<font color=bule>这段代码展示了在方法执行之前和方法执行之后的拦截流程。通过读这段代码，我们可以看出，想要拦截Receiver类的TestMethod方法。如果还没有被拦截过，那么返回改造过的方法，如果已经拦截过，defer在最后执行一些事项。
+
+　　　　1. _skywalking_enhance_receiver_TestMethod:此函数在方法拦截之前执行，并将Receiver和方法的参数传递给它。函数返回当前调用对象以及是否继续执行。如果不需要进一步执行，则返回自定义结果。否则，执行后续代码。
+
+　　　　2. _skywalking_enhance_receiver_TestMethod_ret:该函数在拦截方法完成后执行，并将当前方法的返回值传递给它。值得注意的是，如果要拦截的方法没有参数名，增强程序会自动为其设置参数名。
+　　</font>
+
 ##### Copy interceptor code to the package
 
 　　The enhancement program copies the files from the plugin into the framework's code package, allowing the interceptor to be combined with method execution.
 
 　　It's important to note that the copying process strictly follows the hierarchy of the method interception. If it's in the root directory, only files in the root directory will be copied. If it's in a certain level under a package, the files in that level will be copied. The reason for this approach is due to the principle that only files of the same package will be compiled during mixed compilation.
+
+　　<font color=bule>增强程序把插件中的文件复制到项目的package中，从而使得拦截器与方法相结合。值得注意的是，复制过程严格遵循方法拦截的层次结构。如果它在根目录中，则只复制根目录中的文件。如果它位于package下的某个级别，则该级别中的文件将被复制。采用这种方法的原因是混合编译期间只编译同一package的文件这一原则。
+　　</font>
 
 ##### Create bridge methods
 
@@ -394,6 +408,16 @@ func _skywalking_enhance_receiver_TestMethod_ret(invocation *Invocation, result_
 
 　　　　3. The second method: This will be executed after the intercepted method is completed, with the return value of the intercepted method also being passed in. Similarly, there is a "recover" method to prevent issues caused by the plugin code.
 
+　　<font color=bule>创建桥接方法是为了将方法执行前后的逻辑与拦截器中的代码集成在一起。
+
+　　　　1. 拦截器实例:实例将在当前package中构造，而不是在每次执行时创建，以减少内存开销。
+
+　　　　2. 第一个方法:在方法拦截器中，将参数和Receiver信息构造到调用对象中，并执行拦截器的BeforeInvoke方法。如果它不需要继续，它将返回一个自定义返回值，否则，它将继续运行。如果在代码执行期间出现任何问题(从BeforeInvoke中恢复或返回错误值)，程序也将recover继续执行。
+
+　　　　3. 第二个方法:它将在被截获的方法完成后执行，同时也传入被截获的方法的返回值。类似地，有一个“恢复”方法来防止由插件代码引起的问题。
+
+　　</font>
+
 ##### Result
 
 　　Upon completion of these three steps, the following modifications can be made to the files in the intercepted package:
@@ -403,6 +427,16 @@ func _skywalking_enhance_receiver_TestMethod_ret(invocation *Invocation, result_
 　　　　2. Add interceptor file: Copy the file where the interceptor is located.
 
 　　　　3. Add bridge file: Write a separate file for the bridging part.
+
+　　<font color=bule>完成这三个步骤后，可以对拦截的package中的文件进行以下修改:
+
+　　　　1. 修改含有增强方法的文件:在执行被截获的方法之前创建代码。
+
+　　　　2. 添加拦截器文件:复制拦截器所在的文件。
+
+　　　　3. 添加桥接文件:为桥接部分编写一个单独的文件。
+
+　　</font>
 
 ##### Code Location Change Issue
 
@@ -429,6 +463,9 @@ func (x *Receiver) TestMethod(arg1 int) (result error) {
 ```
 
 　　Using this approach, the only downside I can think of is that when a problem occurs, the method name in the stack trace might not be correct, but the code line would be completely accurate.
+
+　　<font color=bule>如果我们将代码添加到被截获的方法中，当出现问题时，可能会导致代码行位置发生移位，导致报错代码定位不准。我想到的解决方案是创建一个新方法并将其命名为真正的方法，并将被截获的方法重命名为临时名称。示例代码如上。使用这种方法，我能想到的唯一缺点是，当出现问题时，堆栈跟踪中的方法名称可能不正确，但代码行定位将完全准确。
+　　</font>
 
 #### Instance Enhance
 

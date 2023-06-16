@@ -38,7 +38,7 @@ tags:
 　　<font color=bule>通过我的技术预研，我发现目前有两种技术可以实现期望的功能：eBPF或混合编译。
 　　</font>
 
-#### eBPF
+#### eBPF（extended Berkeley Packet Filter）
 ![eBPF](/assets/technique/Go语言实现无侵入埋点/eBPF.png)
 
 　　eBPF is a popular technology in recent years. In Apache SkyWalking, we have our own eBPF Agent -- Apache SkyWalking Rover, which allows non-intrusive monitoring of applications. In simple terms, with eBPF, the program can be monitored without any modifications; all that is needed is to deploy the eBPF Agent on the machine where the service is running.
@@ -54,7 +54,13 @@ https://github.com/DataDog/dd-trace-go/issues/1273#issuecomment-1119580249
 
 　　Due to the two key issues mentioned above, we have decided to abandon this approach.
 
-　　<font color=bule>eBPF是近年来流行的一种技术。在Apache SkyWalking中，我们有自己的eBPF代理——Apache SkyWalking Rover，它允许对应用程序进行非侵入式监视。
+　　<font color=bule>eBPF（extended Berkeley Packet Filter）是一种开源技术，它提供了一种在操作系统内核中执行自定义代码的机制。eBPF最初是为网络数据包过滤而设计的，但现在已经扩展到其他领域，如安全监控、性能分析和系统跟踪等。
+
+　　BPF的核心思想是在内核中嵌入一种虚拟机，它可以执行安全且高效的用户定义代码片段，这些代码片段通常被称为eBPF程序。eBPF程序可以在数据包到达网络协议栈的各个阶段执行，从而实现实时的数据包过滤和处理。与传统的基于规则的数据包过滤器相比，eBPF提供了更高的灵活性和可编程性。
+
+　　eBPF程序使用一种基于RISC（精简指令集计算机）的指令集来定义其逻辑。这些指令被编译成一种中间表示（IR），然后由内核的JIT（即时编译）编译器转换成本机机器码，以便在内核中执行。
+
+　　eBPF是近年来流行的一种技术。在Apache SkyWalking中，我们有自己的eBPF代理——Apache SkyWalking Rover，它允许对应用程序进行非侵入式监视。
 
 　　eBPF可以监视Golang程序中每个方法的执行过程。它做的就是在方法执行期间拦截方法，获取数据。
 
